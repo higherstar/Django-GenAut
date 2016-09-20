@@ -1,0 +1,90 @@
+{% extends "checkout/layout.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% trans "Checkout gateway" %} | {{ block.super }}
+{% endblock %}
+
+{% block checkout_nav %}
+    {% include 'checkout/nav.html' with step=0 %}
+{% endblock %}
+
+{% block checkout_title %}{% trans "Who are you?" %}{% endblock %}
+
+{% block content %}
+    <div class="block-header">
+        <h4>WHO ARE YOU?</h4>
+    </div>
+    {% include 'checkout/partials/password_reset_form.html' %}
+    <form action="." method="post" class="form-stacked well checkout-gateway">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% comment %}
+            {% include "partials/form_field.html" with field=form.username %}
+        {% endcomment %}
+        <div class="row">
+            <div class="col-xs-6">
+               {{ form.username }}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="controls">
+                <div class="radio">
+                    {{ form.options.0 }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group {% if form.password.errors %}error{% endif %}">
+            {{ form.options.errors }}
+            <div class="controls">
+                <div class="radio">
+                    {{ form.options.2 }}
+                    <div class="form-inline">
+                        {% render_field form.password class+="form-control" %}
+{#                        <small><a href="{% url 'password-reset' %}" tabindex="-1">{% trans "Get a password reminder" %}</a></small>#}
+                        <a href="#" data-toggle="modal" data-target="#forgot-password">Get a password reminder</a>
+                        {% for error in form.password.errors %}
+                            <span class="error-block">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="controls">
+                <div class="radio">
+                    {{ form.options.1 }}
+                </div>
+            </div>
+        </div>
+        {% block formactions %}
+            <div class="row form-buttons">
+                <div class="col-md-2">
+                    <a href="{% url 'basket:summary' %}">PREVIOUS STEP</a>
+                </div>
+                <div class="col-md-10 text-right">
+                    <button type="submit" class="btn btn-info btn-action " data-loading-text="{% trans 'Continuing...' %}">{% trans "Next" %}</button>
+                </div>
+            </div>
+        {% endblock formactions %}
+
+
+<!--         <div class="form-group">
+            <div class="row">
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-lg btn-block btn-primary" data-loading-text="{% trans 'Continuing...' %}">{% trans "Continue" %}</button>
+                </div>
+            </div> -->
+        </div>
+    </form>
+
+{% endblock content %}
+
+{% block onbodyload %}
+    {{ block.super }}
+    oscar.checkout.gateway.init();
+{% endblock %}

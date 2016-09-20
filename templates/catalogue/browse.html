@@ -1,0 +1,333 @@
+{% extends "catalogue/catalogue_wrapper.html" %}
+
+{% load display_tags %}
+{% load basket_tags %}
+{% load promotion_tags %}
+{% load thumbnail %}
+{% load category_tags %}
+{% load product_tags %}
+{% load currency_filters %}
+{% load purchase_info_tags %}
+{% load static %}
+{% load i18n %}
+{% load encrypt_url %}
+
+{% block title %}
+    {{ summary }} | {{ block.super }}
+{% endblock %}
+
+{% block extrastyles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/selectboxjs.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static "js/selectboxit.js" %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{{ homepage_url }}">{% trans "Home" %}</a>
+            <span class="divider"></span>
+        </li>
+        {% if not category %}
+            <li class="active">{% trans "All products" %}</li>
+        {% else %}
+            {% for category in category.get_ancestors|slice:":-1" %}
+                <li>
+                    <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+                    <span class="divider">/</span>
+                </li>
+            {% endfor %}
+            <li class="active">{{ category.name }}</li>
+        {% endif %}
+    </ul>
+{% endblock breadcrumbs %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9 block-description">
+            <h1>{% block headertext %}{{ summary }}{% endblock %}</h1>
+
+
+            <div class="row-fluid">
+                <div><p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                    labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                    nisi ut aliquip ex ea commodo consequat.</p>
+
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+                        mollit anim id est laborum."</p>
+
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                        pariatur. "</p>
+                </div>
+                <div><img class="img-responsive img-category" src="{% static 'images/cz-1-1.jpg' %}"
+                          alt="{{ summary }}"/></div>
+            </div>
+            {% comment %}
+
+    Uncomment this and delete previous div when categories will be available in context variable
+
+    {% if category.description %}
+        <div class="row-fluid">
+            <div class="span9"><p>{{ category.description|safe }}</p></div>
+            {% if category.image %}
+                <div class="span3"><img src="{{ category.image.url }}" alt="{{ summary }}" /></div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endcomment %}
+        </div>
+        <!-- Left sidebar filter -->
+        <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3  margin-bottom-30">
+            {% include "partials/quick_search_box.html" %}
+        </div>
+        <!-- End Left sidebar filter -->
+    </div>
+    <div>
+        <div class="row">
+            <form method="post" action="/catalogue/search/">
+                {% csrf_token %}
+                <div class="col-xs-12 col-md-2">
+                    <div class="form__select_custom form__sort">
+                        <span class="caret caret-float"></span>
+
+                        <div id="sort_by_part_type_label" class="form__select_custom__text select-title">
+                            {% if not sort_by_part_type %}
+                                Sort by Parts Type
+                            {% else %}
+                                {{ sort_by_part_type }}
+                            {% endif %}
+                        </div>
+                        <select id="sort_by_part_type" class="form-control input-sm">
+                            {% for part_type in part_types %}
+                                <option value="{{ part_type.pk }}">{{ part_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-2">
+                    <div class="form__select_custom form__sort">
+                        <span class="caret caret-float"></span>
+
+                        <div id="sort_by_brand_label" class="form__select_custom__text select-title">Sort by Brand</div>
+                        <select id="sort_by_brand" class="form-control input-sm">
+                            {% for brand in brands %}
+                                <option value="{{ brand.pk }}">{{ brand }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-2">
+                    <div class="form__select_custom form__sort">
+                        <span class="caret caret-float"></span>
+
+                        <div class="form__select_custom__text select-title">Sort by Custom Fit</div>
+                        <select class="form-control input-sm">
+                            <option value="Price">Custom Fit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-2">
+                    <div class="form__select_custom form__sort">
+                        <span class="caret caret-float"></span>
+
+                        <div class="form__select_custom__text select-title">Sort by Universal Fit</div>
+                        <select class="form-control input-sm">
+                            <option value="Price">Universal Fit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-4">
+                    <div class="form__select_custom form__sort pull-right">
+                        <span class="caret caret-float"></span>
+
+                        <div id="per_page_select_label"
+                             class="form__select_custom__text select-title">{{ per_page }}</div>
+                        <select id="per_page_select" class="form-control input-sm">
+                            <option value="16">16</option>
+                            <option value="24">24</option>
+                            <option value="32">32</option>
+                            <option value="48">48</option>
+                        </select>
+                    </div>
+                    <span class="pull-right form__sort_text">Products per page</span>
+                </div>
+            </form>
+            <form method="get" action="." class="form-horizontal">
+            </form>
+        </div>
+
+        <div class="row products-grid">
+            {% if page.object_list %}
+                <section>
+                    <div class="row">
+                        {% for result in page.object_list %}
+                            {% render_product result %}
+                        {% endfor %}
+
+                        <div class="col-md-12 col-xs-12">
+                            {% include "partials/pagination.html" %}
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+    {{ block.super }}
+    <script src="{% static 'js/slidebars.min.js' %}"></script>
+    <script src="{% static 'js/retina.min.js' %}"></script>
+    <script src="{% static 'js/jquery.backstretch.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        function addParameter(url, parameterName, parameterValue, atStart/*Add param before others*/) {
+            replaceDuplicates = true;
+            if (url.indexOf('#') > 0) {
+                var cl = url.indexOf('#');
+                urlhash = url.substring(url.indexOf('#'), url.length);
+            } else {
+                urlhash = '';
+                cl = url.length;
+            }
+            sourceUrl = url.substring(0, cl);
+
+            var urlParts = sourceUrl.split("?");
+            var newQueryString = "";
+
+            if (urlParts.length > 1) {
+                var parameters = urlParts[1].split("&");
+                for (var i = 0; (i < parameters.length); i++) {
+                    var parameterParts = parameters[i].split("=");
+                    if (!(replaceDuplicates && parameterParts[0] == parameterName)) {
+                        if (newQueryString == "")
+                            newQueryString = "?";
+                        else
+                            newQueryString += "&";
+                        newQueryString += parameterParts[0] + "=" + (parameterParts[1] ? parameterParts[1] : '');
+                    }
+                }
+            }
+            if (newQueryString == "")
+                newQueryString = "?";
+
+            if (atStart) {
+                newQueryString = '?' + parameterName + "=" + parameterValue + (newQueryString.length > 1 ? '&' + newQueryString.substring(1) : '');
+            } else {
+                if (newQueryString !== "" && newQueryString != '?')
+                    newQueryString += "&";
+                newQueryString += parameterName + "=" + (parameterValue ? parameterValue : '');
+            }
+            return urlParts[0] + newQueryString + urlhash;
+        }
+
+        $(document).ready(function () {
+
+            var per_page_select = $('#per_page_select');
+            per_page_select.val('{{ per_page }}');
+            per_page_select.change(function () {
+                $('#per_page_select_label').html(per_page_select.find(":selected").text());
+
+                var url = addParameter(window.location.href, 'per_page', per_page_select.val());
+                location.assign(url);
+            });
+
+            var sort_by_part_type = $('#sort_by_part_type');
+            sort_by_part_type.val('{{ per_page }}');
+            sort_by_part_type.change(function () {
+                $('#sort_by_part_type_label').html(sort_by_part_type.find(":selected").text());
+
+                var url = addParameter(window.location.href, 'sort_by_part_type', sort_by_part_type.val());
+                location.assign(url);
+            });
+
+            var sort_by_brand = $('#sort_by_brand');
+            sort_by_brand.val('{{ per_page }}');
+            sort_by_brand.change(function () {
+                $('#sort_by_brand_label').html(sort_by_brand.find(":selected").text());
+
+                var url = addParameter(window.location.href, 'sort_by_brand', sort_by_brand.val());
+                location.assign(url);
+            });
+
+            var form = $('#selectvlrform');
+            data = $('#data')
+            tr = $('#data tr')
+            manufacturer = {}
+            data_manufacturer = $('#data td.manufacturer');
+            $.each(data_manufacturer, function (index, value) {
+                manufacturer[data_manufacturer[index].innerHTML] = true
+            })
+            manselect = $('#manufacturer')
+            modelsselect = $('#model');
+            engineselect = $('#engine')
+            yearselect = $('#year')
+            for (var propertyName in manufacturer) {
+                manselect.append("<option value='" + propertyName + "'>" + propertyName + "</option>")
+            }
+
+            manselect.on('change', function () {
+                man = $('#manufacturer :selected').text();
+                model = {};
+                $.each(tr, function (index, value) {
+                    if (tr[index].children[0].innerHTML == man) {
+                        model[tr[index].children[1].innerHTML] = true
+                    }
+
+                })
+                console.log(model);
+                modelselect = $("#model");
+                modelselect.empty()
+                modelselect.append("<option value=''>Select a model</option>")
+                for (var propertyName in model) {
+                    modelselect.append("<option value='" + propertyName + "'>" + propertyName + "</option>")
+                }
+            })
+
+            modelsselect.on('change', function () {
+                model = $('#model :selected').text();
+                engine = {}
+                $.each(tr, function (index, value) {
+                    if (tr[index].children[1].innerHTML == model) {
+                        engine[tr[index].children[2].innerHTML] = true
+                    }
+
+                })
+                engineselect.empty()
+                engineselect.append("<option value=''>Select a engine</option>")
+                for (var propertyName in engine) {
+                    engineselect.append("<option value='" + propertyName + "'>" + propertyName + "</option>")
+                }
+
+            })
+
+            engineselect.on('change', function () {
+                engine = $('#engine :selected').text();
+                year = {}
+                $.each(tr, function (index, value) {
+                    if (tr[index].children[2].innerHTML == engine) {
+                        year[tr[index].children[3].innerHTML] = tr[index].children[4].innerHTML
+                    }
+
+                })
+                console.log(year)
+                yearselect.empty()
+                yearselect.append("<option value=''>Select a year</option>")
+                for (var propertyName in year) {
+                    yearselect.append("<option value='" + year[propertyName] + "'>" + propertyName + "</option>")
+                }
+                $('#selectvlrform [type="submit"]').removeAttr('disabled')
+
+            })
+        });
+    </script>
+{% endblock %}

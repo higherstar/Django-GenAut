@@ -1,0 +1,184 @@
+{% load i18n %}
+{% load static %}
+{% load category_tags %}
+{% load widget_tweaks %}
+
+<header>
+        {% block block-top-container %}
+
+            <div class="block-top-container sb-slide">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-9 col-sm-6 col-xs-6 block-top-left">
+                            <a class="btn btn-menu sb-toggle-left visible-xs-inline-block"><i
+                                    class="fa fa-reorder fa-lg"></i></a>
+
+                            <div class="row hidden-xs">
+                                <div class="col-xs-12">
+                                    <span>Language</span>
+
+                                    <div class="btn-group block-language-wrapper">
+                                        <button type="button" class="btn block-language dropdown-toggle"
+                                                data-toggle="dropdown">
+                                            <img src="{% static 'images/uk-flag.png' %}" alt="EN">&nbsp;EN&nbsp;<span
+                                                class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#"><img src="{% static 'images/uk-flag.png' %}" alt="EN"> EN</a></li>
+                                            <li><a href="#"><img src="{% static 'images/us-flag.png' %}" alt="US"> US</a></li>
+                                        </ul>
+                                    </div>
+
+                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;Share</span>
+                                    <a class="btn btn-link btn-social" href="#facebook"><i
+                                            class="fa fa-facebook"></i></a>
+                                    <a class="btn btn-link btn-social" href="#twitter"><i class="fa fa-twitter"></i></a>
+                                    <a class="btn btn-link btn-social" href="#gplus"><i
+                                            class="fa fa-google-plus"></i></a>
+                                    <div class="block-top-cookie">
+
+                        <div class="hidden-md hidden-sm">We use cookies, just to track visits to our website, we store no personal details
+                            <a class="btn" href="#">Accept Cookies</a>                </div>
+            </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-xs-6 block-top-links">
+                            <a class="btn btn-link hidden-xs" href="#mail_us"><i class="fa fa-envelope"></i> Mail us</a>
+                            <!-- Login button -->
+
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'customer:profile-view' %}" class="profile-link">{{ user.username }}</a>
+                                <a class="btn btn-link hidden-xs btn-social" href="{% url "customer:logout" %}"><i class="fa fa-unlock-alt"></i>&nbsp;Logout</a>
+                            <!-- Login pop up -->
+                            {% else %}
+                                <a class="btn btn-link hidden-xs btn-social" href="#login" data-toggle="modal"
+                                    data-target="#login-form"><i class="fa fa-unlock-alt"></i>&nbsp;Login</a>
+
+                            <div class="modal login-popup login" id="login-form" tabindex="-1" role="dialog"
+                                 aria-labelledby="login-popup-label" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header clearfix"><span class="pull-left" id="login-popup-label">Login</span>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-data clearfix">
+                                            {% with "value:"|add:request.path as redirect_value %}
+                                            <form id="login_form" action="{% url 'customer:login' %}" method="post">
+                                                {% csrf_token %}
+                                                    {{ login_form.username }}
+                                                    {{ login_form.password }}
+
+                                                    {{ login_form.redirect_url|attr:redirect_value }}
+
+                                                <button name="login_submit" type="submit" value="Log In" class="btn btn-large btn-info btn-action js-disable-on-click" data-loading-text="{% trans "Logging in..." %}">{% trans 'LOGIN' %}</button>
+                                            </form>
+                                            {% endwith %}
+                                        </div>
+                                        <div class="modal-social clearfix">
+                                            <p>Or login with social media</p>
+
+                                            <div class="modal-social-box clearfix">
+                                                <a href="" class="modal-social-fb"><i class="fa fa-facebook"></i>Facebook</a>
+                                                <a href="" class="modal-social-tw"><i class="fa fa-twitter"></i>Twitter</a>
+                                                <a href="" class="modal-social-gp"><i class="fa fa-google-plus"></i>Google+</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Login pop up -->
+
+                            <a class="btn btn-link hidden-xs" href="{% url 'customer:register' %}">Register</a>
+                            {% endif %}
+
+                            <a href="/basket" class="btn btn-menu visible-xs-inline-block"><img
+                                    src="{% static 'images/cart-icon.png' %}" alt="Cart"></a>
+                        </div>
+
+                        <div id="block-search-form-xs" class="hidden-xs"></div>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+        {% block block-middle-container %}
+            <div class="block-middle-container sb-slide">
+                <nav class="block-middle-nav">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-4 block-header-logo">
+                                <a href="/" class=""><img alt="" src="{% static 'images/logo.svg' %}"></a>
+                            </div>
+                            <div class="col-sm-5 block-navbar-search hidden-xs" id="block-search-form-sm">
+                                <form id="search-form" action="/search/" class="navbar-form-custom">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Search" name="q">
+                        <span class="input-group-btn">
+                          <button class="btn btn-default" type="button">
+                              <i class="fa fa-search"></i>
+                          </button>
+                        </span>
+                                    </div>
+                                    <!-- /input-group -->
+                                </form>
+                            </div>
+                            <div class="col-sm-3 block-basket hidden-xs">
+                                <a href="/basket" class="btn btn-custom btn-basket">
+                                    <img src="{% static 'images/cart.svg' %}" alt="Cart">
+                                    <span class="basket-product-count">{{ basket.num_lines }}</span>
+                                    <span class="basket-product-price">£ {{ basket.total_incl_tax }}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        {% endblock %}
+        {% block block-bottom-container %}
+            <div class="block-bottom-container">
+                <div class="block-bottom-nav">
+                    <nav class="navbar navbar-custom" role="navigation">                                   
+                        <div class="navbar-collapse">                               
+                        {% category_tree as tree_categories %}
+                        {% if tree_categories %}
+                           <ul class="nav navbar-nav">
+                              <li><a href="/"><i class="fa fa-home fa-lg"></i></a></li>
+                              {% for tree_category, info in tree_categories|slice:"7" %}
+                              {% if tree_category.get_ancestors|length == 0 %}
+                                  <li class="dropdown full-width">
+                                      <a href="{{ tree_category.get_absolute_url }}">{{ tree_category.name }}
+                                      {% if tree_category.get_descendants|length > 0 %}
+                                          <b class="caret"></b>
+                                      {% endif %}
+                                      </a>
+                               {% if tree_category.get_descendants|length > 0 %}
+                                   <div class="dropdown-menu multi-column">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-3 col-sm-3">
+                                                    <ul class="dropdown-menu cat-menu">
+                                                        <li><a href="{{ tree_category.get_children.get.get_absolute_url }}">{{ tree_category.get_children.get.name }}</a></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="col-md-3 col-sm-3 submenu-img pull-right">
+                                                    <img src="{% static 'images/submenu-img.png' %} " class="img-responsive" alt="Bulb-img">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                               {% endif %}
+                                  </li>
+                              {% endif %}
+                              {% endfor %}
+                           </ul>
+                         {% endif %}
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        {% endblock %}
+        <div class="visible-xs-block fake-hr"></div>
+    </header>

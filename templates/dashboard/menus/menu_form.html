@@ -1,0 +1,46 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a>
+        </li>
+	<li>
+	    <a href="{% url 'menus:menu-list' %}">Menus</a>
+	</li>
+	{% if object %}
+	  {% for ancestor in object.get_ancestors %}
+	    <li>
+	      <a href="{% url 'menus:menu-list-child' ancestor.pk %}">{{ ancestor.name }}</a>
+	    </li>
+	  {% endfor %}
+          <li>
+	    <a href="{% url 'menus:menu-list-child' object.pk %}">{{ object.name }}</a>
+          </li>
+	{% endif %}
+        <li class="active">{% trans "Create menu node" %}</li>
+    </ul>
+{% endblock %}
+
+{% block headertext %}
+{% if object %}
+    {% trans "Edit" %} {{ object.name }}
+{% else %}
+    {% trans "Create menu" %}
+{% endif %}
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="table-header">
+      {% if object %}
+        <h2>Edit {{ object.name }}</h2>
+      {% else %}
+        <h2>{% trans "Create menu node" %}</h2>
+      {% endif %}
+    </div>
+    <div class="well">
+        {% include 'partials/form.html' with includes_files=1 class='wysiwyg' %}
+    </div>
+{% endblock dashboard_content %}

@@ -1,0 +1,5 @@
+from .models import MenuNode
+
+
+def menus(request):
+    return MenuNode.qwe

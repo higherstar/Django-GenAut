@@ -1,0 +1,217 @@
+{% extends "layout_2_col.html" %}
+
+{% load currency_filters %}
+{% load thumbnail %}
+{% load render_product_tag %}
+{% load static %}
+{% load i18n %}
+{% load purchase_info_tags %}
+{% load encrypt_url %}
+
+{% block title %}
+    "{{ query }}" | {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{{ homepage_url }}">{% trans "Home" %}</a>
+            <span class="divider">/</span>
+        </li>
+        <li>
+            {% trans "Search" %}
+            <span class="divider">/</span>
+        </li>
+        <li class="active">"{{ query }}"</li>
+    </ul>
+{% endblock %}
+
+{% block column_left %}
+    {% if has_facets %}
+        <h4>{% trans "Refine your search" %}</h4>
+        <dl>
+            {% for field, data in facet_data.items %}
+                {% if data.results %}
+                    {% include 'search/partials/facet.html' with name=data.name items=data.results %}
+                {% endif %}
+            {% endfor %}
+        </dl>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <!-- Right part of top content -->
+        <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9  margin-bottom-30 block-description">
+            <h1>Car Bulbs</h1>
+
+            <p>
+                There are many types of replacement car bulb that you may need at some
+                point during your vehicle's life span. Whilst the bulbs in your brake
+                lights, indicators and head lights are made to be durable, the chances
+                are that one or more of them will blow at some point.
+            </p>
+
+            <p>
+                All types of car bulbs for cars of every make and model are available at
+                eurocarparts.com, also interior car light bulbs through to a fog light.
+            </p>
+
+
+            <div class="product-model-image">
+                {% comment %}
+                    <img oncontextmenu="return false" alt="" class="hidden-sm hidden-xs" src="{% static 'images/light_product_model.png' %}">
+                    <img oncontextmenu="return false" alt="" class="visible-xs visible-sm" src="{% static 'images/light_product_model_2.jpg' %}">
+                {% endcomment %}
+            </div>
+
+        </div>
+
+        <!-- Left sidebar filter -->
+        <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3  margin-bottom-30">
+            {% include "partials/quick_search_box.html" %}
+        </div>
+        <!-- End Left sidebar filter -->
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-2">
+            <div class="form__select_custom form__sort">
+                <span class="caret caret-float"></span>
+
+                <div class="form__select_custom__text select-title">Sort by Parts Type</div>
+                <select class="form-control input-sm">
+                    <option value="Price">Parts Type</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-md-2">
+            <div class="form__select_custom form__sort">
+                <span class="caret caret-float"></span>
+
+                <div class="form__select_custom__text select-title">Sort by Brand</div>
+                <select class="form-control input-sm">
+                    <option value="Price">Brand</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-md-2">
+            <div class="form__select_custom form__sort">
+                <span class="caret caret-float"></span>
+
+                <div class="form__select_custom__text select-title">Sort by Custom Fit</div>
+                <select class="form-control input-sm">
+                    <option value="Price">Custom Fit</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-md-2">
+            <div class="form__select_custom form__sort">
+                <span class="caret caret-float"></span>
+
+                <div class="form__select_custom__text select-title">Sort by Universal Fit</div>
+                <select class="form-control input-sm">
+                    <option value="Price">Universal Fit</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-xs-4">
+            <div class="form__select_custom form__sort pull-right">
+                <span class="caret caret-float"></span>
+
+                <div id="per_page_select_label"
+                     class="form__select_custom__text select-title">{{ per_page }}</div>
+                <select id="per_page_select" class="form-control input-sm">
+                    <option value="16">16</option>
+                    <option value="24">24</option>
+                    <option value="32">32</option>
+                    <option value="48">48</option>
+                </select>
+            </div>
+            <span class="pull-right form__sort_text">Products per page</span>
+        </div>
+    </div>
+    {% if page.object_list %}
+        <section>
+            <div class="row">
+                {% for result in page.object_list %}
+                    {% render_searched_product result %}
+                {% endfor %}
+                <div class="col-md-12 col-xs-12">
+                    {% include "partials/pagination.html" %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'js/slidebars.min.js' %}"></script>
+    <script src="{% static 'js/jquery.backstretch.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        function addParameter(url, parameterName, parameterValue, atStart/*Add param before others*/) {
+            replaceDuplicates = true;
+            if (url.indexOf('#') > 0) {
+                var cl = url.indexOf('#');
+                urlhash = url.substring(url.indexOf('#'), url.length);
+            } else {
+                urlhash = '';
+                cl = url.length;
+            }
+            sourceUrl = url.substring(0, cl);
+
+            var urlParts = sourceUrl.split("?");
+            var newQueryString = "";
+
+            if (urlParts.length > 1) {
+                var parameters = urlParts[1].split("&");
+                for (var i = 0; (i < parameters.length); i++) {
+                    var parameterParts = parameters[i].split("=");
+                    if (!(replaceDuplicates && parameterParts[0] == parameterName)) {
+                        if (newQueryString == "")
+                            newQueryString = "?";
+                        else
+                            newQueryString += "&";
+                        newQueryString += parameterParts[0] + "=" + (parameterParts[1] ? parameterParts[1] : '');
+                    }
+                }
+            }
+            if (newQueryString == "")
+                newQueryString = "?";
+
+            if (atStart) {
+                newQueryString = '?' + parameterName + "=" + parameterValue + (newQueryString.length > 1 ? '&' + newQueryString.substring(1) : '');
+            } else {
+                if (newQueryString !== "" && newQueryString != '?')
+                    newQueryString += "&";
+                newQueryString += parameterName + "=" + (parameterValue ? parameterValue : '');
+            }
+            return urlParts[0] + newQueryString + urlhash;
+        }
+
+        $(document).ready(function () {
+            $('#per_page_select').val('{{ per_page }}');
+
+            $('#per_page_select').change(function () {
+                var per_page_select_val = $('#per_page_select').val();
+                $('#per_page_select_label').html(per_page_select_val);
+
+                var url = addParameter(window.location.href, 'per_page', $('#per_page_select').val())
+                location.assign(url);
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block onbodyload %}
+    {{ block.super }}
+    oscar.search.init();
+{% endblock %}

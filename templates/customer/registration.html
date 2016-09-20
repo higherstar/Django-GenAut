@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% trans 'Register' %} | {{ block.super }}
+{% endblock %}
+
+{% block styles %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/static/oscar/css/styles.css" />
+<link rel="stylesheet" type="text/css" href="/static/oscar/css/responsive.css" />
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{{ homepage_url }}">{% trans 'Home' %}</a>
+            <span class="divider">/</span>
+        </li>
+        <li class="active">{% trans 'Register' %}</li>
+    </ul>
+{% endblock %}
+
+{% block headertext %}
+    {% trans "Register" %}
+{% endblock %}
+
+{% block content %}
+    <p>
+        &nbsp;
+    </p>
+    <div class="row-fluid">
+        <div class="block-header">
+            <h2>{% trans 'Register' %}</h2>
+        </div>
+        <div class="span6 register_form">
+            <form id="register_form" action="." method="post" class="form-stacked">
+                {% csrf_token %}
+                {% comment %}
+                    {% include "partials/form_fields.html" with form=form %}
+                    {% include "partials/form_fields.html" with form=address_form %}
+                {% endcomment %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="page-header">
+                            <h4>Your personal information</h4>
+                        </div>
+                        {% comment %}
+                            {% include "partials/form_fields.html" with form=form %}
+                        {% endcomment %}
+
+                        <div class="form-group{% if form.title.errors %} has-error has-feedback{% endif %}">
+                            <!--{{ form.title.label_tag }}-->
+                            {{ address_form.title|attr:"class:form-control" }}
+                            {{ address_form.title.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if form.first_name.errors %} has-error has-feedback{% endif %}">
+                            <!-- {{ form.first_name.label_tag }} -->
+                            {{ address_form.first_name|attr:"placeholder:First Name"|attr:"class:form-control" }}
+                            {{ address_form.first_name.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if form.last_name.errors %} has-error has-feedback{% endif %}">
+                            <!--{{ form.last_name.label_tag }}-->
+                            {{ address_form.last_name|attr:"placeholder:Last Name"|attr:"class:form-control" }}
+                            {{ address_form.last_name.errors.as_text }}
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="type">Date of Birth</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control">
+                                        <option>Day</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-control">
+                                        <option>Month</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control">
+                                        <option>Year</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group{% if form.email.errors %} has-error has-feedback{% endif %}">
+                            {# <input name="email" class="form-control" placeholder="example@mail.com" /> #}
+                            {{ form.email|attr:"placeholder:example@mail.com"|attr:"class:form-control" }}
+                            {{ form.email.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if form.password1.errors %} has-error has-feedback{% endif %}">
+                            {# <input type="password" name="password1" class="form-control" placeholder="Password" /> #}
+                            {{ form.password1|attr:"placeholder:Password"|attr:"class:form-control" }}
+                            {{ form.password1.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if form.password2.errors %} has-error has-feedback{% endif %}">
+                            {# <input type="password" name="password2" class="form-control" placeholder="Confirm Password" /> #}
+                            {{ form.password2|attr:"placeholder:Confirm Password"|attr:"class:form-control" }}
+                            {{ form.password2.errors.as_text }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="page-header">
+                            <h4>Your address</h4>
+                        </div>
+                        <div class="form-group{% if address_form.line1.errors %} has-error has-feedback{% endif %}">
+                            <!--<input type="text" class="form-control" placeholder="Company">-->
+                            {{ address_form.line2|attr:"placeholder:Company"|attr:"class:form-control" }}
+                            {{ address_form.line2.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if address_form.line2.errors %} has-error has-feedback{% endif %}">
+                            <!--<input type="text" class="form-control" placeholder="Address">-->
+                            {{ address_form.line1|attr:"placeholder:Address"|attr:"class:form-control" }}
+                            {{ address_form.line1.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if address_form.postcode.errors %} has-error has-feedback{% endif %}">
+                            <!--<input type="text" class="form-control" placeholder="Zip/Postal Code">-->
+                            {{ address_form.postcode|attr:"placeholder:Zip/Postal Code"|attr:"class:form-control" }}
+                            {{ address_form.postcode.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if address_form.line4.errors %} has-error has-feedback{% endif %}">
+                            <!--<input type="text" class="form-control" placeholder="City">-->
+                            {{ address_form.line4|attr:"placeholder:City"|attr:"class:form-control" }}
+                            {{ address_form.line4.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if address_form.country.errors %} has-error has-feedback{% endif %}">
+                            <!--<input type="text" class="form-control" placeholder="Country">-->
+                            {{ address_form.country|attr:"placeholder:Country"|attr:"class:form-control" }}
+                            {{ address_form.country.errors.as_text }}
+                        </div>
+                        <div class="form-group{% if address_form.phone_number.errors %} has-error has-feedback{% endif %}">
+                            <!--<input type="text" class="form-control" placeholder="Phone Number">-->
+                            {{ address_form.phone_number|attr:"placeholder:Phone Number"|attr:"class:form-control" }}
+                            {{ address_form.phone_number.errors }}
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Assign an address title for future reference" />
+                        </div>
+                        <div class="form-group{% if address_form.notes.errors %} has-error has-feedback{% endif %}">
+                            <!--<textarea class="form-control" rows="4">Additional information</textarea>-->
+                            {{ address_form.notes|attr:"placeholder:Additional Information" }}
+                            {{ address_form.notes.errors.as_text }}
+                        </div>
+                    </div>
+                </div>
+                <button name="registration_submit" type="submit" value="Register" class="btn btn-primary btn-large js-disable-on-click" data-loading-text="{%trans 'Registering...' %}">{% trans 'Register' %}</button>
+                {% if cancel_url %}
+                    {% trans "or" %} <a href="{{ cancel_url }}">{% trans "cancel" %}</a>.
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock content %}

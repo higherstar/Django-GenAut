@@ -1,0 +1,372 @@
+{% extends "layout.html" %}
+{% load i18n compress %}
+{% load purchase_info_tags %}
+{% load currency_filters %}
+{% load thumbnail %}
+{% load encrypt_url %}
+{% load static %}
+
+<head>
+    <title>{% block title %}Genius Auto Parts{% endblock %}Genius Auto Parts</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="created" content="{% now "jS M Y h:i" %}"/>
+    <meta name="description" content="{% block description %}{% endblock %}"/>
+    <meta name="keywords" content="{% block keywords %}{% endblock %}"/>
+    <meta name="viewport" content="{% block viewport %}width=device-width{% endblock %}"/>
+    <meta name="robots" content="NONE,NOARCHIVE"/>
+
+    <!-- [if lt IE 9]>
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+    {% block favicon %}
+    {% endblock %}
+
+    {# Additional CSS - specific to certain pages #}
+    {% block extrastyles %}
+        {{ block.super }}
+    {% endblock %}
+    {% block extrahead %}
+    {% endblock %}
+</head>
+
+<main class="sb-slide">
+        {% block block-container-selects %}
+            <div class="block-container-selects">
+                <div class="container">
+                    <h4>Quick Search my car parts</h4>
+
+                    <div class="row block-reg-form">
+                        <div class="block-reg-form-row">
+                            <form class="form-inline form-enter-reg" id="vrm_search_form" role="form" method="get"
+                                  action="/search/">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">&nbsp;&nbsp;</div>
+                                        <input class="form-control input-sm" type="text" id="reg_number"
+                                               name="reg_number"
+                                               placeholder="Enter your reg">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-enter-reg">Find</button>
+                            </form>
+                        </div>
+                    </div>
+                    <form method="get" action="/search/">
+                        <div class="row block-selects">
+                            <div class="col-sm-3">
+                                <div class="form__select_custom">
+                                    <span class="caret caret-float"></span>
+
+                                    <div class="form__select_custom__text select-title" id="vehicle-title">Select
+                                        Vehicle
+                                    </div>
+                                    <select class="form-control input-sm" id="select_vehicle">
+                                        <option>Select Vehicle</option>
+                                        {% for vehicle in vehicles %}
+                                            <option value="{{ vehicle }}">{{ vehicle }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form__select_custom">
+                                    <span class="caret caret-float"></span>
+
+                                    <div class="form__select_custom__text select-title" id="brand-title">Select Brand
+                                    </div>
+                                    <select class="form-control input-sm" id="select_brand">
+                                        <option>Select Brand</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form__select_custom">
+                                    <span class="caret caret-float"></span>
+
+                                    <div class="form__select_custom__text select-title" id="model-title">Select Model
+                                    </div>
+                                    <select class="form-control input-sm" id="select_model">
+                                        <option>Select Model</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 margin-bottom-20">
+                                <div class="form__select_custom">
+                                    <span class="caret caret-float"></span>
+
+                                    <div class="form__select_custom__text select-title" id="type-title">Select Type
+                                    </div>
+                                    <select class="form-control input-sm" name="type" id="select_type">
+                                        <option>Select Type</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 block-selects-submit">
+                                <button type="submit" class="btn btn-primary">Find</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endblock %}
+        {% block content_wrapper %}
+            <div class="container container-fluid page">
+                <div class="page_inner">
+                    {% block breadcrumbs %}{% endblock %}
+                    <div class="row-fluid">
+                        <aside class="sidebar span3 margin-bottom-30">
+                            {# Render promotions at the top of the left-hand sidebar #}
+                            <div id="promotions_left">
+                                {% for promotion in promotions_left %}
+                                    {#                                {%  TODO render_promotion promotion %}#}
+                                {% endfor %}
+                            </div>
+                            {% block column_left %}{% endblock %}
+                        </aside>
+                        <div class="span9">
+                            {% block header %}
+                            {% endblock %}
+
+                            {% block content %}
+                                <div class="block-container-benefits margin-bottom-40">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-xs-3 benefit">
+                                                <img src="../../static/images/free_shipping.svg" alt=""><span
+                                                    class="hidden-xs">Free Shipping</span>
+                                            </div>
+                                            <div class="col-xs-3 benefit">
+                                                <img src="../../static/images/12_month_warranty.svg" alt=""><span
+                                                    class="hidden-xs">Free 12 Month Warranty</span>
+                                            </div>
+                                            <div class="col-xs-3 benefit">
+                                                <img src="../../static/images/quality_guaranteed.svg" alt=""><span
+                                                    class="hidden-xs">Quality Guaranteed Parts</span>
+                                            </div>
+                                            <div class="col-xs-3 benefit">
+                                                <img src="../../static/images/call_us_phone.svg" alt=""><span
+                                                    class="hidden-xs">Call Us <strong
+                                                    class="call-us">00
+                                                44 1273 782120</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container">
+                                    <div class="block-header">
+                                        <h4>Featured Products</h4>
+                                    </div>
+                                    <div class="row margin-bottom-40 products-grid">
+                                        {% for product in products %}
+                                            {#  {% if forloop.counter|divisibleby:5 %}<div class="row row1">{% endif %}#}
+                                            {% purchase_info_for_product request product as session %}
+                                            <div class="col-md-3 col-sm-6">
+                                                <div class="product-container">
+                                                
+                                                    <div class="product-header">
+                                                        {% if product.images.all|length != 0 %}
+                                                            {% with image=product.primary_image %}
+                                                                {% thumbnail image.url "440x400" upscale=False as thumb %}
+                                                                    <div class="product-image">
+                                                                        <a href="/catalogue/{{ product.slug }}_{{ product.id }}/">
+                                                                            <img oncontextmenu="return false;"
+                                                                                 src="/catalogue/image/?d={{ thumb.url|encrypt_url }}" alt="">
+<!--                                                                                  <img oncontextmenu="return false;"
+                                                                                 src="../../static/images/product-image.png" alt=""> -->
+                                                                        </a>
+                                                                    </div>
+                                                                {% endthumbnail %}
+                                                            {% endwith %}
+                                                        {% else %}
+                                                            <div class="product-image">
+                                                                <a href="/catalogue/{{ product.slug }}_{{ product.id }}/">
+                                                                    <img class="img-zoom"
+                                                                    src="../../static/images/product-image.png" alt="">
+                                                                </a>
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="product-title">
+                                                            <a href="/catalogue/{{ product.slug }}_{{ product.id }}/">{{ product.title }}</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-footer">
+                                                        <span class="pull-left product-price">
+                                                            {% if session.price.is_tax_known %}
+                                                                {{ session.price.incl_tax|currency:session.price.currency }}
+                                                            {% else %}
+                                                                {{ session.price.excl_tax|currency:session.price.currency }}
+                                                            {% endif %}
+                                                        </span>
+                                                        <div class="product-actions pull-right text-right">
+                                                            {% if session.availability.is_available_to_buy %}
+                                                                <i class="fa fa-check fa-green product-status-icon green-tooltip" 
+                                                                    data-toggle="tooltip" data-placement="bottom" title="In Stock"></i>
+                                                            {% else %}
+                                                                <i class="fa fa-times fa-red product-status-icon red-tooltip" data-toggle="tooltip"
+                                                                       data-placement="bottom" data-html="true"
+                                                                       data-delay='{"show": 100, "hide": 1000 }'
+                                                                    title="Out of Stock &nbsp;&nbsp;&nbsp;<a href='#'>Notify me</a> <span>for availability</span>"></i>
+                                                            {% endif %}
+                                                            {% if product.delivery_options.special_order %}
+                                                                <i class="fa fa-star fa-orange product-status-icon" title="Special Order Item"
+                                                                    data-toggle="tooltip" data-placement="bottom" data-tooltip-color=""></i>
+                                                            {% endif %}
+
+                                                            {% if product.delivery_options.delivery_time %}
+                                                                <i class="fa fa-truck fa-black product-status-icon" title="2-8 Weeks Delivery"
+                                                                    data-toggle="tooltip" data-placement="bottom"></i>
+                                                            {% endif %}
+
+                                                            {% include "catalogue/partials/add_to_basket_form_compact.html" %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {#  {% if forloop.counter|divisibleby:8 %}<div>{% endif %}#}
+                                        {% endfor %}
+                                        {% if is_paginated %}
+                                            <div class="pagination">
+                    <span class="page-links">
+                        {% if page_has_prev %}
+                            <a href="/?page={{ page_prev }}">previous</a>
+                        {% endif %}
+                        <span class="page-current">
+                            Page {{ page }} of {{ pages_count }}.
+                        </span>
+                        {% if page_has_next %}
+                            <a href="/?page={{ page_next }}">next</a>
+                        {% endif %}
+                    </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endblock %}
+                            {% include 'partials/news.html' %}
+                            {% block featured-products %}
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+    </main>
+
+{% block cdn_scripts %}
+    {{ block.super }}
+{% endblock %}
+
+{# Local scripts #}
+{% block scripts %}
+    {{ block.super }}
+    <script src="../../static/js/jquery.mobile.custom.min.js"></script>
+    <script src="../../static/js/slidebars.min.js"></script>
+    <script src="../../static/js/retina.min.js"></script>
+    <script src="../../static/js/jquery.backstretch.min.js"></script>
+    <script src="../../static/js/main.js"></script>
+    {% comment %}
+    <!-- // <script src="../../static/js/selectboxit.js"></script> -->
+    <!-- <link rel="stylesheet" href="../../static/css/selectboxjs.css"/> -->
+    {% endcomment%}
+    <script>
+        $(window).load(function () {
+            //wrap all product in a rows to view normally
+            var divs = $(".products-grid .col-md-3");
+            for (var i = 0; i < divs.length; i += 4) {
+                divs.slice(i, i + 4).wrapAll("<div class='row'></div>");
+            }
+        });
+        $(window).resize(function () {
+            // makeEqualHight('.product-container');
+        });
+    </script>
+{% endblock %}
+
+{# Additional JS scripts #}
+{% block extrascripts %}
+    <script type="text/javascript">
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        var csrftoken = getCookie('csrftoken');
+
+        // using jQuery
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        function sameOrigin(url) {
+            // test that a given url is a same-origin URL
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                    (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                        // or any other URL that isn't scheme relative or absolute i.e relative.
+                    !(/^(\/\/|http:|https:).*/.test(url));
+        }
+
+        $('#vrm_search_form').submit(function(){
+            var vrm = $('#reg_number').val();
+            if (vrm == '') {
+                return false;
+            }
+            $.ajax({
+                url: '/check_vrm/',
+                type: 'POST',
+                data: {
+                    'reg_number': vrm
+                },
+                statusCode : {
+                    404: function() {
+                        $('#reg_number').css('background-color', '#FF3300');
+                    }
+                },
+                success: function(resp_text) {
+                    var form = "{% csrf_token %}<input type='hidden' name='car_details' value='" + resp_text + "'>"
+                    $('<form action="' + '/vehicle_save/'+'" method="POST">' + form+'</form>').appendTo('body').submit();
+                }
+            });
+            return false;
+        });
+
+    </script>
+    {# Block for body onload functions #}
+    <script type="text/javascript">
+    $(function () {
+        oscar.init();
+        {% block onbodyload %} {% endblock %}
+    });
+</script>
+{% endblock %}
+

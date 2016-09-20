@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load currency_filters %}
+
+<p>
+    {% if basket.is_empty %}
+        {% trans "Your basket is now empty" %}
+    {% else %}
+        {% if basket.is_tax_known %}
+            {% blocktrans with total=basket.total_incl_tax|currency:basket.currency %}
+            Your basket total is now <strong>{{ total }}</strong>
+            {% endblocktrans %}
+        {% else %}
+            {% blocktrans with total=basket.total_excl_tax|currency:basket.currency %}
+            Your basket total is now <strong>{{ total }}</strong>
+            {% endblocktrans %}
+        {% endif %}
+    {% endif %}
+</p>
+
+{% if include_buttons %}
+<p>
+    <a href="{% url 'basket:summary' %}" class="btn btn-info">{% trans "View basket" %}</a>
+    <a href="{% url 'checkout:index' %}" class="btn btn-info">{% trans "Checkout now" %}</a>
+</p>
+{% endif %}
+<div class="modal login-popup login add-popup" tabindex="-1" role="dialog"
+     aria-hidden="true" id="addedModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-center">
+                <span id="login-popup-label">The product is now in the basket</span>
+{#                <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#                    <i class="fa fa-times"></i>#}
+{#                </button>#}
+            </div>
+            <div class="modal-data clearfix text-center">
+                {% if include_buttons %}
+                <p>
+                    <a href="/" class="btn btn-modal pull-left btn-added">{% trans "CONTINUE SHOPPING" %}</a>
+                    <span class="add-modal-txt">OR</span>
+                    <a href="{% url 'checkout:index' %}" class="btn btn-modal pull-right btn-added">{% trans "PROCEED TO CHECKOUT" %}</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

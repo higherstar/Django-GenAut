@@ -1,0 +1,19 @@
+{% load basket_tags %}
+{% load i18n %}
+{% load purchase_info_tags %}
+{% load static %}
+
+{% purchase_info_for_product request product as session %}
+
+{% if session.availability.is_available_to_buy %}
+    {% basket_form request product 'single' as basket_form %}
+    <form action="{% url 'basket:add' pk=product.pk %}" method="post" style="display:inline; margin:0; padding:0;">
+        {% csrf_token %}
+        {{ basket_form.as_p }}
+        <!--<button type="submit" class="btn btn-primary btn-block">{% trans "Add to basket" %}</button>-->
+        <button type="submit" class="btn btn-large btn-primary btn-add-to-basket" value="{% trans "Buy" %}" style="text-transform:uppercase;"><img src="{% static 'images/cart-white.svg' %}" alt="" style="position:relative;top:-2px;margin-right:6px;" /> {% trans "Buy" %}</button>
+    </form>
+{% else %}
+    <!--<span class="btn btn-block disabled">{% trans "Add to basket" %}</span>-->
+    <span class="btn btn-block disabled"><img src="{% static 'images/cart-white.svg' %}" alt="" /> {% trans "Buy" %}</span>
+{% endif %}

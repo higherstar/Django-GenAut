@@ -1,0 +1,600 @@
+{% extends "catalogue/catalogue_wrapper.html" %}
+
+{% load history_tags %}
+{% load currency_filters %}
+{% load reviews_tags %}
+{% load static %}
+{% load product_tags %}
+{% load display_tags %}
+{% load thumbnail %}
+{% load i18n %}
+{% load purchase_info_tags %}
+{% load category_tags %}
+
+
+{% block title %}
+    {{ product.title }} | {{ block.super }}
+{% endblock %}
+
+{% block description %}
+    {{ product.description|default:""|striptags }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{{ homepage_url }}">{% trans "Home" %}</a>
+            <span class="divider">/</span>
+        </li>
+        {% with category=product.categories.all.0 %}
+            <li>
+                <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+            </li>
+            {% for c in category.get_children %}
+            <li>
+                <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+                <span class="divider">/</span>
+            </li>
+            {% endfor %}
+{#            <li class="active">{{ product.title }}</li>#}
+
+            {% get_back_button as backbutton %}
+            {% if backbutton %}
+                <li class="pull-right">
+                    <a href="{{ backbutton.url }}">
+                        <i class="icon-arrow-left"></i> {{ backbutton.title }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endwith %}
+    </ul>
+{% endblock %}
+
+{% block header %}
+{% endblock header %}
+
+{% block content %}
+    <p>
+        &nbsp;
+    </p>
+
+<!-- Product page -->
+
+<!-- Right sidebar filter and left part of top content -->
+<div class="row">
+
+    <!-- Left part of top content -->
+    <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9  margin-bottom-30">
+        {% comment %}
+            <div class="product-model-image">
+                <img oncontextmenu="return false" alt="" class="hidden-sm hidden-xs" src="{% static 'images/light_product_model.png' %}">
+                <img oncontextmenu="return false" alt="" class="visible-xs visible-sm" src="{% static 'images/light_product_model_2.jpg' %}">
+            </div>
+        {% endcomment %}
+
+        <!-- Product promotion -->
+        <div class="row">
+            <div class="product-promotion">
+                {% with all_images=product.original_images.all %}
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
+                        <section id="gallery" class="simplegallery">
+                            <div class="gall-content">
+                                {% for image in all_images %}
+                                    {% thumbnail image.url "440x400" upscale=False as thumb %}
+                                        <a href=""><img oncontextmenu="return false" src="//127.0.0.1:8000/static/images/product-image.png" class="img-responsive image_{{ forloop.counter0 }}" alt="{{ product.get_title }}" /></a>
+                                    {% endthumbnail %}
+                                {% endfor %}
+                            </div>
+{#                                {% with image=product.original_images.all.0 %}#}
+{#                                    <div class="gall-content">#}
+{#                                        <a href="{{ product.get_absolute_url }}" title="{{ product }}">#}
+{#                                            {% thumbnail image.url "440x400" upscale=False as thumb %}#}
+{#                                                <img src="{{ thumb.url }}" alt="{{ product.get_title }}" oncontextmenu="return false" class="img-responsive" />#}
+{#                                            {% empty %}#}
+{#                                                <img src="{% static 'images/product-image.png'%}" alt="{{ product.get_title }}" class="img-responsive" />#}
+{#                                            {% endthumbnail %}#}
+{#                                        </a>#}
+{#                                    </div>#}
+{#                                {% endwith %}#}
+
+                            <div class="gall-thumbnail hidden-xs row">
+                                {% for image in all_images %}
+                                    <div class="thumb col-sm-4 {% if forloop.last %}last{% endif %}">
+                                        <a href="#" rel="{{ forloop.counter0 }}">
+                                            {% thumbnail image.url "106x170" crop="center" as thumb %}
+                                                <img class="img-thumbnail" oncontextmenu="return false" src="//127.0.0.1:8000/static/images/product-image.png" id="thumb_{{ forloop.counter0 }}" alt="{{ product.get_title }}" />
+                                            {% endthumbnail %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+{#                                {% with image=product.original_images.all.0 %}#}
+{#                                    <div class="product-image">#}
+{#                                        <a href="{{ product.get_absolute_url }}" title="{{ product }}">#}
+{#                                            {% thumbnail image.url "440x400" upscale=False as thumb %}#}
+{#                                                <img src="{{ thumb.url }}" alt="{{ product.get_title }}" oncontextmenu="return false" class="img-responsive" />#}
+{#                                            {% empty %}#}
+{#                                                <img src="{% static 'images/product-image.png'%}" alt="{{ product.get_title }}" class="img-responsive" />#}
+{#                                            {% endthumbnail %}#}
+{#                                        </a>#}
+{#                                    </div>#}
+{#                                {% endwith %}#}
+                            </div>
+                            <div class="clearfix"></div>
+                        </section>
+                    </div>
+                {% endwith %}
+
+                <div class="col-sm-8 col-md-8 col-lg-9">
+                    <div class="product-title">
+                        <h4 style="font-weight:normal;"><span style="color:#333;">Product #: </span>{{ product.get_title }}</h4>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            SKU: {{ product.upc }}
+                        </div>
+                        <div class="col-md-4">
+                            Brand:
+                            {% for av in product.attribute_values.all %}
+                                {% if av.attribute.name == 'Brand Name' %}
+                                    {{ av.value_as_html }}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <p>
+                        &nbsp;
+                    </p>
+
+                    <div class="product-price-box">
+                        {% block product_stock_record %}
+                            {% include "catalogue/partials/stock_record.html" with verbose=1 %}
+                        {% endblock %}
+                    </div>
+
+                    <div class="product-count-buy">
+                        <form class="form-inline">
+                            <div class="input-group">
+                                <span class="input-group-addon button-change dec">&ndash;</span>
+                                <input type="text" class="" value="1">
+                                <span class="input-group-addon button-change inc">+</span>
+                            </div>
+                        </form>
+
+                        {% block product_basket_form %}
+                            {% include "catalogue/partials/add_to_basket_form.html" %}
+                        {% endblock %}
+
+                    </div>
+
+                    {% for av in product.attribute_values.all %}
+                        {% if av.attribute.slug == 'warranty_description' %}
+                            <p class="product-warranty"><span>Warranty:</span> {{ av.value_as_html }}</p>
+
+                            <p>
+                                &nbsp;
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="row">
+                        {% if product.delivery_options.special_order %}
+                            <div class="col-md-6">
+                                <span class="fa fa-star fa-black product-status-icon"></span> &nbsp; Special Order Item
+                            </div>
+                        {% endif %}
+                        {% if product.delivery_options.delivery_time %}
+                            <div class="col-md-6">
+                                <span class="fa fa-truck fa-black product-status-icon"></span> &nbsp; {{ product.delivery_options.delivery_time }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <p style="text-align: center">
+                        <b>Seen a lower price? Call Us!</b> <a href="tel:+18665295530">1-866-529-5530</a> <b>or</b> <a
+                            href="mailto:mail@test.com">Email Us</a>
+                    </p>
+                    <div class="row">
+                        <div class="col-md-7 col-md-push-3 product-quantity">
+                            <h4><b>Quantity</b></h4>
+                                <ul class="quantity-list">
+                                    {% for av in product.attribute_values.all %}
+                                        {% if av.attribute.name == 'Key Product Features1' %}
+                                            <li>{{ av.value_as_html }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for av in product.attribute_values.all %}
+                                        {% if av.attribute.name == 'Key Product Features2' %}
+                                            <li>{{ av.value_as_html }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for av in product.attribute_values.all %}
+                                        {% if av.attribute.name == 'Key Product Features3' %}
+                                            <li>{{ av.value_as_html }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for av in product.attribute_values.all %}
+                                        {% if av.attribute.name == 'Key Product Features4' %}
+                                            <li>{{ av.value_as_html }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                        </div>
+                    </div>
+                    <p></p>
+                    <div class="row product-share">
+                        <div class="col-md-5">
+                            <span>Share product </span>
+                            <a class="btn btn-link btn-social social-fb" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"><i class="fa fa-facebook"></i></a>
+                            <a class="btn btn-link btn-social social-tw" href="https://twitter.com/home?status={{ request.build_absolute_uri|urlencode }}"><i class="fa fa-twitter"></i></a>
+                            <a class="btn btn-link btn-social social-gp" href="https://plus.google.com/share?url={{ request.build_absolute_uri|urlencode }}"><i class="fa fa-google-plus"></i></a>
+                        </div>
+                        <div class="col-md-7">
+                        {% iffeature "reviews" %}
+                            {% include "catalogue/reviews/partials/review_stars.html" %}
+                        {% endiffeature %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+
+            </div>
+        </div>
+        <!-- End Product promotion -->
+
+    </div>
+    <!-- End Left part of top content -->
+
+    <!-- Right sidebar filter -->
+    <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3  margin-bottom-30">
+        {% include "partials/quick_search_box.html" %}
+    </div>
+    <!-- End Right sidebar filter -->
+    {% include "catalogue/partials/review_form_partial.html" with form=product_review_form %}
+</div>
+<!-- End of Right sidebar filter and left part of top content -->
+<!-- Product detail -->
+<div class="product-detail-header" role="tabpanel">
+
+    <!-- Product detail Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#details" aria-controls="details" role="tab" data-toggle="tab">DETAILS</a></li>
+        <li role="presentation"><a href="#delivery" aria-controls="delivery" role="tab" data-toggle="tab">DELIVERY</a></li>
+        <li role="presentation"><a href="#returns" aria-controls="returns" role="tab" data-toggle="tab">RETURNS</a></li>
+    </ul>
+    <!-- End Product detail Nav tabs -->
+
+    <!-- Product detail Tab content -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="details">
+            {% if product.description %}
+            <p>{{ product.description|safe }}</p>
+            <div class="clearfix"><a class="collapse-description-link pull-right" data-toggle="collapse" href="#collapseDescription" aria-expanded="false" aria-controls="collapseDescription">Read more</a></div>
+            {% endif %}
+            <div class="collapse" id="collapseDescription">
+                <div class="sub-header">
+                    <h3>{% trans "Product Information" %}</h3>
+                </div>
+                <table class="table table-striped table-condensed">
+                    {% if product.upc %}
+                    <tr>
+                        <th>{% trans "UPC" %}</th><td>{{ product.upc }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{% trans "Product Type" %}</th><td>{{ product.get_product_class.name }}</td>
+                    </tr>
+
+                    {% purchase_info_for_product request product as session %}
+                    {% if session.price.exists %}
+                        <tr>
+                            <th>{% trans "Price (excl. tax)" %}</th><td>{{ session.price.excl_tax|currency:session.price.currency }}</td>
+                        </tr>
+                        {% if session.price.is_tax_known %}
+                            <tr>
+                                <th>{% trans "Price (incl. tax)" %}</th><td>{{ session.price.incl_tax|currency:session.price.currency }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "Tax" %}</th><td>{{ session.price.tax|currency:session.price.currency }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <th>{% trans "Availability" %}</th>
+                            <td>{{ session.availability.message }}</td>
+                        </tr>
+                    {% endif %}
+                    {% for av in product.attribute_values.all %}
+                        <tr>
+                            <th>{{ av.attribute.name }}</th>
+                            <td>{{ av.value_as_html }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% iffeature "reviews" %}
+                        <tr>
+                            <th>{% trans "Number of reviews" %}</th>
+                            <td>{{ product.num_approved_reviews }}</td>
+                        </tr>
+                    {% endiffeature %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            {% block product_review %}
+                <section>
+                    {% comment %}
+                        {% include "catalogue/reviews/review_product.html" %}
+                    {% endcomment %}
+                    {% if not reviews %}
+                        <p class="well">
+                            {% trans "This product does not have any reviews yet" %} -
+                            <a href="#" data-toggle="modal" data-target="#myModal">{% trans "be the first to write one" %}</a>.
+                        </p>
+                    {% else %}
+                        {% for review in reviews|slice:":3" %}
+                            {% include 'catalogue/partials/review.html' %}
+                        {% endfor %}
+                    {% endif %}
+                </section>
+            {% endblock product_review %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="delivery">
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam inventore voluptates dolor non voluptatibus quasi qui facere quos harum, voluptatem totam autem illo quis repudiandae error nobis repellendus excepturi. Numquam quae architecto sapiente autem, libero et ducimus nobis porro. Maxime, illo ut, assumenda iusto quam similique libero in vitae possimus nesciunt temporibus a veritatis dolores laudantium corporis quisquam, quas facilis.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam inventore voluptates dolor non voluptatibus quasi qui facere quos harum, voluptatem totam autem illo quis repudiandae error nobis repellendus excepturi. Numquam quae architecto sapiente autem, libero et ducimus nobis porro. Maxime, illo ut, assumenda iusto quam similique libero in vitae possimus nesciunt temporibus a veritatis dolores laudantium corporis quisquam, quas facilis.</p>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="returns">
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam inventore voluptates dolor non voluptatibus quasi qui facere quos harum, voluptatem totam autem illo quis repudiandae error nobis repellendus excepturi. Numquam quae architecto sapiente autem, libero et ducimus nobis porro. Maxime, illo ut, assumenda iusto quam similique libero in vitae possimus nesciunt temporibus a veritatis dolores laudantium corporis quisquam, quas facilis.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam inventore voluptates dolor non voluptatibus quasi qui facere quos harum, voluptatem totam autem illo quis repudiandae error nobis repellendus excepturi. Numquam quae architecto sapiente autem, libero et ducimus nobis porro. Maxime, illo ut, assumenda iusto quam similique libero in vitae possimus nesciunt temporibus a veritatis dolores laudantium corporis quisquam, quas facilis.</p>
+        </div>
+    </div><!-- End Product detail Tab content -->
+
+</div><!-- End Product detail -->
+
+<!-- Product detail and related products -->
+<div class="product-detail-related">
+
+    <!-- Related products -->
+    <!-- Should be replaced with products from database -->
+    <div class="related-product-header">
+        <h4>RELATED PRODUCTS</h4>
+    </div>
+    <div class="row margin-bottom-40 products-grid">
+        <div class="col-md-3 col-sm-6">
+            <div class="product-container">
+                <div class="product-header">
+                    {% with image=product.original_images.all.0 %}
+                        <div class="product-image">
+                            <a href="{{ product.get_absolute_url }}" title="{{ product }}">
+                                {% thumbnail image.url "440x400" upscale=False as thumb %}
+{#                                    <img src="{{ thumb.url }}" alt="{{ product.get_title }}" oncontextmenu="return false" class="img-responsive" />#}
+{#                                {% empty %}#}
+                                    <img src="{% static 'images/product-image.png'%}" alt="{{ product.get_title }}" class="img-responsive" />
+                                {% endthumbnail %}
+                            </a>
+                        </div>
+                    {% endwith %}
+                    <div class="product-title"><a href="{{ product.get_absolute_url }}" title="{{ product.get_title }}">{{ product.get_title }}</a>
+                    </div>
+                </div>
+                <div class="product-footer">
+                    <span class="pull-left product-price">£ 70.00</span>
+                    <div class="product-actions pull-right text-right">
+                        <i class="fa fa-check fa-green product-status-icon green-tooltip"
+                            data-toggle="tooltip" data-placement="bottom" title="In Stock"></i>
+                        <i class="fa fa-star fa-orange product-status-icon" title="Special Order Item"
+                            data-toggle="tooltip" data-placement="bottom" data-tooltip-color=""></i>
+                        <i class="fa fa-truck fa-black product-status-icon" title="{{ product.delivery_options.delivery_time }}"
+                            data-toggle="tooltip" data-placement="bottom"></i>
+
+                        {% include "catalogue/partials/add_to_basket_form_compact.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="product-container">
+                <div class="product-header">
+                    {% with image=product.original_images.all.0 %}
+                        <div class="product-image">
+                            <a href="{{ product.get_absolute_url }}" title="{{ product }}">
+                                {% thumbnail image.url "440x400" upscale=False as thumb %}
+{#                                    <img src="{{ thumb.url }}" alt="{{ product.get_title }}" oncontextmenu="return false" class="img-responsive" />#}
+{#                                {% empty %}#}
+                                    <img src="{% static 'images/product-image.png'%}" alt="{{ product.get_title }}" class="img-responsive" />
+                                {% endthumbnail %}
+                            </a>
+                        </div>
+                    {% endwith %}
+                    <div class="product-title"><a href="{{ product.get_absolute_url }}" title="{{ product.get_title }}">{{ product.get_title }}</a>
+                    </div>
+                </div>
+                <div class="product-footer">
+                    <span class="pull-left product-price">£ 70.00</span>
+                    <div class="product-actions pull-right text-right">
+                        <i class="fa fa-check fa-green product-status-icon green-tooltip"
+                            data-toggle="tooltip" data-placement="bottom" title="In Stock"></i>
+                        <i class="fa fa-star fa-orange product-status-icon" title="Special Order Item"
+                            data-toggle="tooltip" data-placement="bottom" data-tooltip-color=""></i>
+                        <i class="fa fa-truck fa-black product-status-icon" title="{{ product.delivery_options.delivery_time }}"
+                            data-toggle="tooltip" data-placement="bottom"></i>
+
+                        {% include "catalogue/partials/add_to_basket_form_compact.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="product-container">
+                <div class="product-header">
+                    {% with image=product.original_images.all.0 %}
+                        <div class="product-image">
+                            <a href="{{ product.get_absolute_url }}" title="{{ product }}">
+                                {% thumbnail image.url "440x400" upscale=False as thumb %}
+{#                                    <img src="{{ thumb.url }}" alt="{{ product.get_title }}" oncontextmenu="return false" class="img-responsive" />#}
+{#                                {% empty %}#}
+                                    <img src="{% static 'images/product-image.png'%}" alt="{{ product.get_title }}" class="img-responsive" />
+                                {% endthumbnail %}
+                            </a>
+                        </div>
+                    {% endwith %}
+                    <div class="product-title"><a href="{{ product.get_absolute_url }}" title="{{ product.get_title }}">{{ product.get_title }}</a>
+                    </div>
+                </div>
+                <div class="product-footer">
+                    <span class="pull-left product-price">£ 70.00</span>
+                    <div class="product-actions pull-right text-right">
+                        <i class="fa fa-check fa-green product-status-icon green-tooltip"
+                            data-toggle="tooltip" data-placement="bottom" title="In Stock"></i>
+                        <i class="fa fa-star fa-orange product-status-icon" title="Special Order Item"
+                            data-toggle="tooltip" data-placement="bottom" data-tooltip-color=""></i>
+                        <i class="fa fa-truck fa-black product-status-icon" title="{{ product.delivery_options.delivery_time }}"
+                            data-toggle="tooltip" data-placement="bottom"></i>
+
+                        {% include "catalogue/partials/add_to_basket_form_compact.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="product-container">
+                <div class="product-header">
+                    {% with image=product.original_images.all.0 %}
+                        <div class="product-image">
+                            <a href="{{ product.get_absolute_url }}" title="{{ product }}">
+                                {% thumbnail image.url "440x400" upscale=False as thumb %}
+{#                                    <img src="{{ thumb.url }}" alt="{{ product.get_title }}" oncontextmenu="return false" class="img-responsive" />#}
+{#                                {% empty %}#}
+                                    <img src="{% static 'images/product-image.png'%}" alt="{{ product.get_title }}" class="img-responsive" />
+                                {% endthumbnail %}
+                            </a>
+                        </div>
+                    {% endwith %}
+                    <div class="product-title"><a href="{{ product.get_absolute_url }}" title="{{ product.get_title }}">{{ product.get_title }}</a>
+                    </div>
+                </div>
+                <div class="product-footer">
+                    <span class="pull-left product-price">£ 70.00</span>
+                    <div class="product-actions pull-right text-right">
+                        <i class="fa fa-check fa-green product-status-icon green-tooltip"
+                            data-toggle="tooltip" data-placement="bottom" title="In Stock"></i>
+                        <i class="fa fa-star fa-orange product-status-icon" title="Special Order Item"
+                            data-toggle="tooltip" data-placement="bottom" data-tooltip-color=""></i>
+                        <i class="fa fa-truck fa-black product-status-icon" title="{{ product.delivery_options.delivery_time }}"
+                            data-toggle="tooltip" data-placement="bottom"></i>
+
+                        {% include "catalogue/partials/add_to_basket_form_compact.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- End Related products --> <!-- Should be replaced with products from database -->
+</div><!-- End of product page -->
+{% endblock content %}
+
+{% block extrascripts %}
+    {{ block.super }}
+    <script src="{% static 'js/slidebars.min.js' %}"></script>
+    <script src="{% static 'js/retina.min.js' %}"></script>
+    <script src="{% static 'js/jquery.backstretch.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static "js/cutter.js" %}"></script>
+    <script>
+        $(document).ready(function () {
+            var form = $('#selectvlrform');
+            data = $('#data')
+            tr = $('#data tr')
+            manufacturer = {}
+            data_manufacturer = $('#data td.manufacturer');
+            $.each(data_manufacturer, function (index, value) {
+                manufacturer[data_manufacturer[index].innerHTML] = true
+            })
+            manselect = $('#manufacturer')
+            modelsselect = $('#model');
+            engineselect = $('#engine')
+            yearselect = $('#year')
+            for (var propertyName in manufacturer) {
+                manselect.append("<option value='" + propertyName + "'>" + propertyName + "</option>")
+            }
+
+            manselect.on('change', function () {
+                man = $('#manufacturer :selected').text();
+                model = {};
+                $.each(tr, function (index, value) {
+                    if (tr[index].children[0].innerHTML == man) {
+                        model[tr[index].children[1].innerHTML] = true
+                    }
+
+                })
+                console.log(model);
+                modelselect = $("#model");
+                modelselect.empty()
+                modelselect.append("<option value=''>Select a model</option>")
+                for (var propertyName in model) {
+                    modelselect.append("<option value='" + propertyName + "'>" + propertyName + "</option>")
+                }
+            })
+
+            modelsselect.on('change', function () {
+                model = $('#model :selected').text();
+                engine = {}
+                $.each(tr, function (index, value) {
+                    if (tr[index].children[1].innerHTML == model) {
+                        engine[tr[index].children[2].innerHTML] = true
+                    }
+
+                })
+                engineselect.empty()
+                engineselect.append("<option value=''>Select a engine</option>")
+                for (var propertyName in engine) {
+                    engineselect.append("<option value='" + propertyName + "'>" + propertyName + "</option>")
+                }
+
+            })
+
+            engineselect.on('change', function () {
+                engine = $('#engine :selected').text();
+                year = {}
+                $.each(tr, function (index, value) {
+                    if (tr[index].children[2].innerHTML == engine) {
+                        year[tr[index].children[3].innerHTML] = tr[index].children[4].innerHTML
+                    }
+
+                })
+                console.log(year)
+                yearselect.empty()
+                yearselect.append("<option value=''>Select a year</option>")
+                for (var propertyName in year) {
+                    yearselect.append("<option value='" + year[propertyName] + "'>" + propertyName + "</option>")
+                }
+                $('#selectvlrform [type="submit"]').removeAttr('disabled')
+
+            })
+        });
+    </script>
+    <script>
+    //Cutting text on product page here
+    $(document).ready(function ()
+    {
+        {
+            var self = this;
+            var oElement = document.getElementById("details");
+            Cutter.run(oElement, oElement, 100);
+            $(this).hide();
+            $(".more").click(function () {
+                $(self).show();
+            })
+            return false;
+        }
+    });
+    </script>
+    <script type="text/javascript">
+    $(window).load(function(){
+        $('#addedModal').modal('show');
+    });
+</script>
+{% endblock %}

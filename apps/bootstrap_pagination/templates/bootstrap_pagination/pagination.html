@@ -1,0 +1,61 @@
+{% load bootstrap_pagination %}
+<ul>
+	{% if show_prev_next %}
+		{% if page.has_previous %}
+			<li class="prev">
+				<a title="Previous Page" rel="prev" style="color:#E4701E;" href="{{ previous_page_url|default:"#" }}">Previous</a>
+			</li>
+		{% endif %}
+	{% endif %}
+	{% if show_first_last %}
+		{% if page.has_previous %}
+			{% if page.number != 1 %}
+				<li>
+					<a title="First Page" href="{{ first_page_url|default:"#" }}">1</a> {% if page.number > 4 %}...{% endif %}
+				</li>
+			{% endif %}
+		{% endif %}
+	{% endif %}
+	
+	{% for pagenum, url in page_urls %}
+		{% if pagenum != 1 %}
+			{% if pagenum != page.paginator.num_pages %}
+				{% if page.number == pagenum %}
+					<li class="active">
+						{{ pagenum }}
+					</li>
+					{% else %}
+					<li>
+						<a title="Page {{ pagenum }} of {{ page.paginator.num_pages }}" href="{{ url }}">{{ pagenum }}</a>
+					</li>
+				{% endif %}
+			{% elif page.number == pagenum %}
+				<li class="active">
+					{{ pagenum }}
+				</li>
+			{% endif %}
+		{% elif page.number == pagenum %}
+			<li class="active">
+				{{ pagenum }}
+			</li>
+		{% endif %}
+	{% endfor %}
+	{% if show_first_last %}
+		{% if page.has_next %}
+			{% if page.number != page.paginator.num_pages %}
+				<li >
+					{% with pagenum_x=page.number|add:3 %}
+					{% if pagenum_x < page.paginator.num_pages %}...{% endif %} <a title="Last Page" href="{{ last_page_url|default:"#" }}">{{page.paginator.num_pages}}</a>
+					{% endwith %}
+				</li>
+			{% endif %}
+		{% endif %}
+	{% endif %}
+	{% if show_prev_next %}
+		{% if page.has_next %}
+			<li class="next">
+				<a title="Next Page" rel="next" style="color:#E4701E;" href="{{ next_page_url|default:"#" }}">Next</a>
+			</li>
+		{% endif %}
+	{% endif %}
+</ul>

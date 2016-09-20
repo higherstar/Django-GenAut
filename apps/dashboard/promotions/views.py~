@@ -1,0 +1,35 @@
+from django.core.urlresolvers import reverse
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.utils.text import ugettext_lazy as _
+from oscar.apps.promotions.models import PagePromotion, MultiImage
+from oscar.apps.dashboard.promotions.views import UpdateView as CoreUpdateView
+
+
+class UpdateView(CoreUpdateView):
+    def add_to_page(self, promotion, request, *args, **kwargs):
+        import ipdb
+        ipdb.set_trace()
+        instance = PagePromotion(content_object=self.get_object())
+        form = self.link_form_class(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            page_url = form.cleaned_data['page_url']
+            instance.page_url = page_url
+            instance.save()
+            messages.success(request, _("Content block '%(block)s' added to"
+                                        " page '%(page)s'")
+                             % {'block': promotion.name,
+                                'page': page_url})
+            return HttpResponseRedirect(reverse('dashboard:promotion-update',
+                                                kwargs=kwargs))
+
+        main_form = self.get_form_class()(instance=self.object)
+        ctx = self.get_context_data(form=main_form)
+        ctx['link_form'] = form
+        return self.render_to_response(ctx)
+
+
+class UpdateMultiImageView(UpdateView):
+    model = MultiImage
+    fields = ['name', 'images']

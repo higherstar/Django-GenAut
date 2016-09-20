@@ -1,0 +1,23 @@
+[
+  {
+    "model": "catalogue.Vehicle",
+    "pk": 1,
+    "fields": {
+      "vehicle": "Cars"
+    }
+  },
+  {
+    "model": "catalogue.Vehicle",
+    "pk": 2,
+    "fields": {
+      "vehicle": "Trucks"
+    }
+  },
+  {
+    "model": "catalogue.Vehicle",
+    "pk": 3,
+    "fields": {
+      "vehicle": "Motorcycles"
+    }
+  }
+]

@@ -1,0 +1,77 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+          <a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a>
+        </li>
+	<li>
+	    <a href="{% url 'menus:menu-list' %}">Menus</a>
+	</li>
+	{% if object %}
+	  {% for ancestor in object.get_ancestors %}
+	    <li>
+	      <a href="{% url 'menus:menu-list-child' ancestor.pk %}">{{ ancestor.name }}</a>
+	    </li>
+	  {% endfor %}
+          <li>
+	    <a href="{% url 'menus:menu-list-child' object.pk %}">{{ object.name }}</a>
+          </li>
+	{% endif %}
+    </ul>
+{% endblock %}
+
+{% block header %}
+    <div class="page-header">
+      {% if object %}
+        <h1>{{ object.name }}</h1>
+      {% else %}
+	<h1>Menus</h1>
+      {% endif %}
+    </div>
+{% endblock header %}
+
+{% block dashboard_content %}
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>{% trans "Title" %}</th>
+      <th>{% trans "Url" %}</th>
+      <th>{% trans "Children count" %}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for menu in object_list %}
+    <tr>
+      <td>{{ menu.name }}</td>
+      <td>{{ menu.url }}</td>
+      <td>{{ menu.get_children.count }}</td>
+      <td>
+        <div class="btn-toolbar">
+          <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+              Actions
+              <span class="caret"></span>
+            </a>
+            <ul class="nav dropdown-menu pull-right">
+              <li><a href="{% url 'menus:menu-update' menu.pk %}">{% trans "Edit menu" %}</a></li>
+              <li><a href="{% url 'menus:menu-list-child' menu.pk %}">{% trans "Edit children" %}</a></li>
+              <li><a href="{% url 'menus:menu-delete' menu.pk %}">{% trans "Delete" %}</a></li>
+            </ul>
+          </div>
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+{% if object %}
+  <a class="btn btn-primary" href="{% url 'menus:menu-create-child' object.pk %}">Create a new Submenu</a>
+{% else %}
+  <a class="btn btn-primary" href="{% url 'menus:menu-create-root' %}">Create a new Menu</a>
+{% endif %}
+{% endblock %}

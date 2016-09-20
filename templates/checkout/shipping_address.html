@@ -1,0 +1,153 @@
+{% extends "checkout/checkout.html" %}
+{% load i18n %}
+
+{% load widget_tweaks %}
+
+{% block title %}
+    {% trans "Shipping address" %} | {{ block.super }}
+{% endblock %}
+
+{% comment %}
+    {% block checkout_nav %}
+        {% include 'checkout/nav.html' with step=1 %}
+    {% endblock %}
+
+    {% block checkout_title %}{% trans "Shipping address" %}{% endblock %}
+{% endcomment %}
+
+{% block order_contents %}{% endblock %}
+
+{% block shipping_address %}
+    <div class="block-header">
+        <h4>SHIPPING ADDRESS</h4>
+    </div>
+    <!--
+    <div class="sub-header">
+        <h2>{% trans "Where should we ship to?" %}</h2><h1>CHECK FIRST PAGE</h1>
+    </div>
+    -->
+    {% if request.user.is_authenticated %}
+        {% if addresses %}
+            <h3>{% trans "An address from your addressbook?" %}</h3>
+            <div class="choose-block">
+                <ul class="row unstyled">
+                    {% for address in addresses %}
+                        {% block select_address_form %}
+                            <li class="col-md-6">
+                                <address>
+                                    {% block select_address_fields %}
+                                        {% for field in address.active_address_fields %}
+                                            <span>{{ field }}</span>{% if not forloop.first %}<br/>{% endif %}
+                                        {% endfor %}
+                                    {% endblock %}
+                                </address>
+                                <form action="{% url 'checkout:shipping-address' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="ship_to" />
+                                    <input type="hidden" name="address_id" value="{{ address.id }}" />
+                                    {% if address.is_default_for_shipping %}
+                                        <button type="submit" class="btn btn-success btn-large ship-address"><i class="icon-ok"></i> {% trans "Ship to your default shipping address" %}</button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-primary btn-large ship-address">{% trans "Ship to this address" %}</button>
+                                    {% endif %}
+
+                                    <div class="btn-group address-controls">
+                                        <a href="{% url 'checkout:user-address-update' pk=address.id %}" class="btn btn-small">{% trans "Edit address" %}</a>
+                                        <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="{% url 'checkout:user-address-delete' pk=address.id %}" class="btn-remove-address">{% trans "Delete" %}</a></li>
+                                        </ul>
+                                    </div>
+                                </form>
+                            </li>
+                            {% if forloop.counter|divisibleby:2 %}
+                                </ul>
+                                {% if not forloop.last %}<ul class="row-fluid">{% endif %}
+                            {% endif %}
+                        {% endblock %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <h3>
+                {% trans "Or a new address?" %} 
+            </h3>
+        {% endif %}
+    {% endif %}
+
+    {% block new_address_form %}
+        <form action="{% url 'checkout:shipping-address' %}" method="post" id="new_shipping_address" class="form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="page-header" style="margin-top:0;">
+                        <h4>Where should we ship to?</h4>
+                    </div>
+                    {% comment %}
+                        {% include "partials/form_fields.html" with form=form %}
+                    {% endcomment %}
+
+                    <div class="form-group{% if form.title.errors %} has-error has-feedback{% endif %}">
+                        <!--{{ form.title.label_tag }}-->
+                        {{ form.title|attr:"class:form-control" }}
+                        {{ form.title.errors.as_text }}
+                    </div>
+                    <div class="form-group{% if form.first_name.errors %} has-error has-feedback{% endif %}">
+                        <!-- {{ form.first_name.label_tag }} -->
+                        {{ form.first_name|attr:"placeholder:First Name"|attr:"class:form-control" }}
+                        {{ form.first_name.errors.as_text }}
+                    </div>
+                    <div class="form-group{% if form.last_name.errors %} has-error has-feedback{% endif %}">
+                        <!--{{ form.last_name.label_tag }}-->
+                        {{ form.last_name|attr:"placeholder:Last Name"|attr:"class:form-control" }}
+                        {{ form.last_name.errors.as_text }}
+                    </div>
+                
+                    <div class="form-group{% if form.line2.errors %} has-error has-feedback{% endif %}">
+                        <!--<input type="text" class="form-control" placeholder="Address">-->
+                        {{ form.line1|attr:"placeholder:First Line of address"|attr:"class:form-control" }}
+                        {{ form.line1.errors.as_text }}
+                    </div>
+                    <div class="form-group{% if form.line4.errors %} has-error has-feedback{% endif %}">
+                        <!--<input type="text" class="form-control" placeholder="City">-->
+                        {{ form.line4|attr:"placeholder:City"|attr:"class:form-control" }}
+                        {{ form.line4.errors.as_text }}
+                    </div>
+                    <div class="form-group{% if form.country.errors %} has-error has-feedback{% endif %}">
+                        <!--<input type="text" class="form-control" placeholder="Country">-->
+                        {{ form.country|attr:"placeholder:Country"|attr:"class:form-control" }}
+                        {{ form.country.errors.as_text }}
+                    </div>
+                    <div class="form-group{% if form.postcode.errors %} has-error has-feedback{% endif %}">
+                        <!--<input type="text" class="form-control" placeholder="Zip/Postal Code">-->
+                        {{ form.postcode|attr:"placeholder:Zip/Postal Code"|attr:"class:form-control" }}
+                        {{ form.postcode.errors.as_text }}
+                    </div>
+                </div>
+            </div>
+            <!--
+            <div class="controls">
+                <button type="submit" class="btn btn-large btn-primary">{% trans "Continue" %}</button>
+                {% trans "or" %} <a href="{% url 'basket:summary' %}">{% trans "return to basket" %}</a>
+            </div>
+            -->
+
+            <p>
+                &nbsp;
+            </p>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="{% url 'basket:summary' %}">PREVIOUS STEP</a>
+                </div>
+                <div class="col-md-6 text-right">
+                    <button type="submit" class="btn btn-large btn-info btn-action">{% trans "NEXT" %}</button>
+                </div>
+            </div>
+        </form>
+    {% endblock %}
+{% endblock shipping_address %}
+
+{% block shipping_method %}{% endblock %}
+{% block payment_method %}{% endblock %}

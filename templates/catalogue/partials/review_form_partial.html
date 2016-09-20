@@ -1,0 +1,35 @@
+{% load i18n %}
+{% load widget_tweaks %}
+{% load reviews_tags %}
+
+<div class="fade modal login-popup" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id="addreview" class="review_add">
+                <div class="modal-header clearfix">
+                    <span>{% trans "Leave a product review" %}</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-data clearfix">
+                    <form id="add_review_form" method="post" action="./reviews/add/#addreview">
+                        <fieldset>
+                            {% csrf_token %}
+                            {% with form=form %}
+
+                                {{ form.name|attr:"placeholder:Your name" }}
+                                {{ form.email|attr:"placeholder:example@mail.com" }}
+                                {{ form.title|attr:"placeholder:Title" }}
+                                {{ form.body|attr:"placeholder:Review text" }}
+                                <p><span class="form_vote">{% trans "Rate it" %}</span>{{ form.score }}</p>
+
+                            {% endwith %}
+                            <button type="submit" class="btn btn-primary pull-right">{% trans "Submit" %}</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a>
+        </li>
+	<li>
+	    <a href="{% url 'menus:menu-list' %}">Menus</a>
+	</li>
+	{% if object %}
+	  {% for ancestor in object.get_ancestors %}
+	    <li>
+	      <a href="{% url 'menus:menu-list-child' ancestor.pk %}">{{ ancestor.name }}</a>
+	    </li>
+	  {% endfor %}
+          <li>
+	    <a href="{% url 'menus:menu-list-child' object.pk %}">{{ object.name }}</a>
+          </li>
+	{% endif %}
+        <li class="active">Delete Menu</li>
+    </ul>
+{% endblock %}
+
+{% block headertext %}Delete Menu{% endblock %}
+
+{% block dashboard_content %}
+    <div class="table-header">
+        <h2>Delete menu</h2>
+    </div>
+    <div class="well">
+        <form action="" method="post">{% csrf_token %}
+            <p>Are you sure you want to delete {{ object_type.lower }} "{{ object.name }}"?</p>
+            <input type="submit" value="Confirm" />
+        </form>
+    </div>
+{% endblock dashboard_content %}

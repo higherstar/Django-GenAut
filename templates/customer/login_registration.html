@@ -1,0 +1,218 @@
+{% extends "layout.html" %}
+{% load form_tags %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}
+    {% trans 'Login' %} | {{ block.super }}
+{% endblock %}
+
+{% block styles %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/static/oscar/css/styles.css" />
+<link rel="stylesheet" type="text/css" href="/static/oscar/css/responsive.css" />
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{{ homepage_url }}">{% trans 'Home' %}</a>
+            <span class="divider">/</span>
+        </li>
+        <li class="active">{% trans 'Login' %}</li>
+    </ul>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+    <p>
+        &nbsp;
+    </p>
+
+    <div class="row">
+{#        <div class="col-md-6 register_form">#}
+{#            <form id="register_form" action="{{ request.get_full_path }}" method="post">#}
+{#                <div class="block-header">#}
+{#                    <h2>{% trans 'Sign' %}</h2>#}
+{#                </div>#}
+{#                {% csrf_token %}#}
+{##}
+{#                {% with form=registration_form %}#}
+{#                    {% if form.is_bound and not form.is_valid %}#}
+{#                        <div class="alert alert-error">#}
+{#                            <strong>{% trans "Oops! We found some errors" %}</strong> - {% trans "please check the error messages below and try again" %}#}
+{#                        </div>#}
+{#                    {% endif %}#}
+{#    #}
+{#                    {% if form.non_field_errors %}#}
+{#                        {% for error in form.non_field_errors %}#}
+{#                            <div class="alert alert-error control-group error">#}
+{#                                <span class="help-inline"><i class="icon-exclamation-sign"></i> {{ error }}</span>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    {% endif %}#}
+{#    #}
+{#                    {% for field in form %}#}
+{#                        {% if field.is_hidden %}#}
+{#                            {{ field }}#}
+{#                        {% else %}#}
+{#                            {% comment %}#}
+{#                                Make the field widget type available to templates so we can mark-up#}
+{#                                checkboxes differently to other widgets.#}
+{#                            {% endcomment %}#}
+{#                            {% annotate_form_field field %}#}
+{##}
+{#                            <div class="control-group {% if field.errors %}error{% endif %}">#}
+{#                                <div class="controls">#}
+{#                                    {% if field.widget_type == 'CheckboxInput' %}#}
+{#                                        <label for="{{ field.auto_id }}" class="checkbox {% if field.field.required %}required{% endif %}">#}
+{#                                            {{ field.label|safe }}{% if field.field.required %} <span>*</span>{% endif %}#}
+{#                                            {{ field }}#}
+{#                                        </label>#}
+{#                                    {% else %}#}
+{#                                        {{ field }}#}
+{#                                    {% endif %}#}
+{##}
+{#                                    {% for error in field.errors %}#}
+{#                                        <span class="error-block"><i class="icon-exclamation-sign"></i> {{ error }}</span>#}
+{#                                    {% endfor %}#}
+{##}
+{#                                    {% if field.help_text %}#}
+{#                                        <span class='help-block'>#}
+                                            {# We allow HTML within form help fields #}
+{#                                            {{ field.help_text|safe }}#}
+{#                                        </span>#}
+{#                                    {% endif %}#}
+{#                                </div>#}
+{#                                <br>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+{#                    {% endfor %}#}
+{#                {% endwith %}#}
+{##}
+{#                <p>#}
+{#                    &nbsp;#}
+{#                </p>#}
+{##}
+{#                <div class="text-right">#}
+{#                    <button name="registration_submit" type="submit" value="Register" class="btn btn-large btn-info btn-action js-disable-on-click" data-loading-text="{% trans 'Registering...' %}">{% trans 'SIGN' %}</button>#}
+{#                </div>#}
+{#            </form>#}
+{#        </div>#}
+        <div class="col-md-6 login_form">
+            <form id="login_form" action="{{ request.get_full_path }}" method="post">
+                <div class="block-header">
+                    <h2>{% trans 'Login' %}</h2>
+                </div>
+                {% csrf_token %}
+
+                {% with form=login_form %}
+                    {% if form.is_bound and not form.is_valid %}
+                        <div class="alert alert-error">
+                            <strong>{% trans "Oops! We found some errors" %}</strong> - {% trans "please check the error messages below and try again" %}
+                        </div>
+                    {% endif %}
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-error control-group error">
+                                <span class="help-inline"><i class="icon-exclamation-sign"></i> {{ error }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% for field in form %}
+                        {% if field.is_hidden %}
+                            {{ field }}
+                        {% else %}
+                            {% comment %}
+                                Make the field widget type available to templates so we can mark-up
+                                checkboxes differently to other widgets.
+                            {% endcomment %}
+                            {% annotate_form_field field %}
+
+                            <div class="control-group {% if field.errors %}error{% endif %}">
+                                <div class="controls">
+                                    {% if field.widget_type == 'CheckboxInput' %}
+                                        <label for="{{ field.auto_id }}" class="checkbox {% if field.field.required %}required{% endif %}">
+                                            {{ field.label|safe }}{% if field.field.required %} <span>*</span>{% endif %}
+                                            {{ field }}
+                                        </label>
+                                    {% else %}
+                                        {{ field }}
+                                    {% endif %}
+
+                                    {% for error in field.errors %}
+                                        <span class="error-block"><i class="icon-exclamation-sign"></i> {{ error }}</span>
+                                    {% endfor %}
+
+                                    {% if field.help_text %}
+                                        <span class='help-block'>
+                                            {# We allow HTML within form help fields #}
+                                            {{ field.help_text|safe }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <br>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endwith %}
+
+                <p>
+                    &nbsp;
+                </p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><a href="{% url 'password-reset' %}">{% trans "Forgot your password?" %}</a></p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button name="login_submit" type="submit" value="Log In" class="btn btn-large btn-info btn-action js-disable-on-click" data-loading-text="{% trans "Logging in..." %}">{% trans 'LOGIN' %}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+{#        <div class="col-md-6 text-center">#}
+{#            <hr>#}
+{#            Or sign in with social media<br>#}
+{#            <br>#}
+{#            <a href="/accounts/signin/facebook/" class="btn btn-primary"><img src="{% static 'images/fb.png' %}" width="11" height="20" style="margin-right:10px;" /> Facebook</a> &nbsp;#}
+{#            <a href="/accounts/signin/twitter/" class="btn btn-info"><img src="{% static 'images/tw.png' %}" width="25" height="20" style="margin-right:10px;" /> Twitter</a> &nbsp;#}
+{#            <a href="/accounts/signin/googleplus/" class="btn btn-danger"><img src="{% static 'images/gplus.png' %}" width="20" height="20" style="margin-right:10px;" /> Google +</a>#}
+{#        </div>#}
+        <div class="col-md-6 text-center">
+            <hr>
+            Or login with social media<br>
+            <br>
+            <a href="/accounts/login/facebook/" class="btn btn-primary"><img src="{% static 'images/fb.png' %}" width="11" height="20" style="margin-right:10px;" /> Facebook</a> &nbsp;
+            <a href="/accounts/login/twitter/" class="btn btn-info"><img src="{% static 'images/tw.png' %}" width="25" height="20" style="margin-right:10px;" /> Twitter</a> &nbsp;
+            <a href="/accounts/login/googleplus/" class="btn btn-danger"><img src="{% static 'images/gplus.png' %}" width="20" height="20" style="margin-right:10px;" /> Google +</a>
+        </div>
+    </div>
+
+    <p>
+        &nbsp;
+    </p>
+    <p>
+        &nbsp;
+    </p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <a href="">PREVIOUS STEP</a>
+        </div>
+        <div class="col-md-6 text-right">
+            <a href="" class="btn btn-info btn-action">NEXT</a>
+        </div>
+    </div>
+
+    <p>
+        &nbsp;
+    </p>
+
+{% endblock content %}

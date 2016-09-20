@@ -1,0 +1,66 @@
+<div class="block-quick-search">
+    <h4 class="text-center">Quick Search my car parts</h4>
+
+    <div class="row block-reg-form">
+        <div class="block-reg-form-row">
+            <form class="form-inline form-enter-reg" role="form" method="get" action="/search/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">&nbsp;&nbsp;</div>
+                        <input class="form-control" type="text" name="reg_number" placeholder="Enter your reg">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-enter-reg">Find</button>
+            </form>
+        </div>
+    </div>
+
+    <form method="get" action="/search/">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-12 margin-bottom-20">
+                <div class="form__select_custom">
+                <span class="caret caret-float"></span>
+                    <div class="form__select_custom__text select-title" id="vehicle-title">Select Vehicle</div>
+                    <select class="form-control input-sm" name="vehicle" id="select_vehicle">
+                        <option>Select Vehicle</option>
+                        {% for vehicle in vehicles %}
+                            <option value="{{ vehicle }}">{{ vehicle }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12  margin-bottom-20">
+                <div class="form__select_custom">
+                    <span class="caret caret-float"></span>
+                    <div class="form__select_custom__text select-title" id="brand-title">Select Brand</div>
+                    <select class="form-control input-sm" id="select_brand" name="brand">
+                        <option>Select Brand</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12  margin-bottom-20">
+                <div class="form__select_custom">
+                    <span class="caret caret-float"></span>
+                    <div class="form__select_custom__text select-title" id="model-title">Select Model</div>
+                    <select class="form-control input-sm" name="model" id="select_model">
+                        <option>Select Model</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12  margin-bottom-20">
+                <div class="form__select_custom">
+                    <span class="caret caret-float"></span>
+                    <div class="form__select_custom__text select-title" id="type-title">Select Type</div>
+                    <select class="form-control input-sm" name="type" id="select_type">
+                        <option>Select Type</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12  margin-bottom-20 block-selects-submit">
+                <button type="submit" class="btn btn-primary find-btn">Find</button>
+            </div>
+        </div>
+    </form>
+</div>

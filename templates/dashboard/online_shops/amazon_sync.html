@@ -1,0 +1,43 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+
+{% block body_class %}Amazon Sync{% endblock %}
+
+
+{% block title %}
+{% trans "Amazon sync" %} | {{ block.super }}
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+  <h1>{% trans "Amazon sync" %}</h1>
+</div>
+{% endblock header %}
+
+{% block dashboard_content %}
+<h2>From Amazon to website</h2>
+<form action="" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Start sync">
+</form>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Datetime</th>
+            <th>Status</th>
+            <th>Products synced</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in amazon_pulls %}
+            <tr>
+                <td>{{ row.datetime }}</td>
+                <td>{{ row.status }}</td>
+                <td>{{ row.products_synced }}/{{ row.products_total }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>From website to Amazon</h2>
+Not implemented.
+{% endblock %}

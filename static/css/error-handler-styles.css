@@ -1,0 +1,52 @@
+body.default{
+    background-color: #55acef;
+}
+
+.logo-404 {
+    padding-top: 30px;
+
+}
+
+img {
+    max-width: 400px; !important;
+}
+
+h2.main-text-404 {
+    text-transform: uppercase;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 20%;
+    color: #ffffff;
+    vertical-align: middle;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+h4.secondary-text-404 {
+    color: #323941;
+    text-align: center;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    padding-top: 48px;
+}
+
+button.btn-404 {
+    background-color: #323a45;
+    border-color: #323a45;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #feffff;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    text-decoration: none;
+}
+
+button.btn-404:focus,
+button.btn-404:hover {
+    background-color: #3f4349;
+    border-color: #323a45;
+    color: #feffff;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    text-decoration: none;
+}

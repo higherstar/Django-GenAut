@@ -1,0 +1,78 @@
+{% load reviews_tags %}
+{% load thumbnail %}
+{% load i18n %}
+{% load display_tags %}
+{% load static %}
+{% load encrypt_url %}
+{% load currency_filters %}
+{% load purchase_info_tags %}
+
+{% block product %}
+    <div class="col-md-3 col-sm-6">
+        <div class="product-container">
+            <div class="product-header">
+                {% if product.original_images.all|length != 0 %}
+                    {% with image=product.primary_image %}
+                        {% thumbnail image.url "440x400" upscale=False as thumb %}
+                            <div class="product-image">
+                                <a href="/catalogue/{{ product.slug }}_{{ product.id }}/">
+                                    <img oncontextmenu="return false;"
+                                         src="/catalogue/image/?d={{ thumb.url|encrypt_url }}" alt="">
+                                </a>
+                            </div>
+                        {% endthumbnail %}
+                    {% endwith %}
+                {% else %}
+                    <div class="product-image">
+                        <a href="/catalogue/{{ product.slug }}_{{ product.id }}/">
+                            <img class="img-zoom"
+                                 src="{% static 'images/product-image.png' %}" alt="">
+                        </a>
+                    </div>
+                {% endif %}
+                <div class="product-title">
+                    <a href="/catalogue/{{ product.slug }}_{{ product.id }}/">{{ product.title }}</a>
+                </div>
+            </div>
+            <div class="product-footer">
+                {% if product %}
+                    {% purchase_info_for_product request product as session %}
+                {% endif %}
+                <span class="pull-left product-price">
+                    {% if session.price.is_tax_known %}
+                        {{ session.price.incl_tax|currency:session.price.currency }}
+                    {% else %}
+                        {{ session.price.excl_tax|currency:session.price.currency }}
+                    {% endif %}
+                </span>
+                <div class="product-actions pull-right text-right">
+                    {% if session.availability.is_available_to_buy %}
+                        <i class="fa fa-check fa-green product-status-icon green-tooltip"
+                           data-toggle="tooltip" data-placement="bottom"
+                           title="In Stock"></i>
+                    {% else %}
+                        <i class="fa fa-times fa-red product-status-icon red-tooltip"
+                           data-toggle="tooltip"
+                           data-placement="bottom" data-html="true"
+                           data-delay='{"show": 100, "hide": 1000 }'
+                           title="Out of Stock &nbsp;&nbsp;&nbsp;<a href='#'>Notify me</a> <span>for availability</span>"></i>
+                    {% endif %}
+                    {% if product.delivery_options.special_order %}
+                        <i class="fa fa-star fa-orange product-status-icon"
+                           title="Special Order Item"
+                           data-toggle="tooltip" data-placement="bottom"
+                           data-tooltip-color=""></i>
+                    {% endif %}
+
+                    {% if product.delivery_options.delivery_time %}
+                        <i class="fa fa-truck fa-black product-status-icon"
+                           title="2-8 Weeks Delivery"
+                           data-toggle="tooltip" data-placement="bottom"></i>
+                    {% endif %}
+
+                    {% include "catalogue/partials/add_to_basket_form_compact.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

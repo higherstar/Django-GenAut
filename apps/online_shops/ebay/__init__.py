@@ -1,0 +1,1 @@
+default_app_config = 'apps.online_shops.ebay.app.EbayConfig'

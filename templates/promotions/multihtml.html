@@ -1,0 +1,17 @@
+{% if promotion.raw_htmls.all %}
+    <div class="container">
+        <div class="slider full-slider">
+            <div class="flexslider">
+                <ul class="slides">
+                    {% for item in promotion.raw_htmls.all %}
+                        <li>
+                            {{ item.body|safe }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+{% endif %}
+
